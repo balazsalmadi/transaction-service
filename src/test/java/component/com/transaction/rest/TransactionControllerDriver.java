@@ -39,6 +39,11 @@ public class TransactionControllerDriver {
         return this;
     }
 
+    public TransactionControllerDriver getTransactionByType( String type ) throws Exception {
+        resultAction = mvc.perform( get( "/transactionservice/types/" + type ) );
+        return this;
+    }
+
     public TransactionControllerDriver resultStatusIs( HttpStatus status ) throws Exception {
         resultAction = resultAction.andExpect( status().is( status.value() ) );
         return this;

@@ -76,4 +76,24 @@ public class TransactionServiceEndToEndTest extends AbstractJUnit4SpringContextT
                                    .resultStatusIs( HttpStatus.BAD_REQUEST )
                                    .resultContentIs( "Transaction '10' is not found!" );
     }
+
+    @Test
+    public void transactionRetrievedByType() throws Exception {
+        transactionControllerDriver.putTransaction( 10, rootTransaction( 5000, "cars" ) )
+                                   .putTransaction( 11, rootTransaction( 2000, "shopping" ) )
+                                   .putTransaction( 12, rootTransaction( 15000, "cars" ) )
+                                   .getTransactionByType( "cars" )
+                                   .resultStatusIs( HttpStatus.OK )
+                                   .resultContentIs( "[10,12]" );
+    }
+
+    @Test
+    public void retrieveByTypeReturnsEmptyListIfNoTransactionsBelongsToTheType() throws Exception {
+        transactionControllerDriver.putTransaction( 10, rootTransaction( 5000, "cars" ) )
+                                   .putTransaction( 11, rootTransaction( 2000, "shopping" ) )
+                                   .putTransaction( 12, rootTransaction( 15000, "cars" ) )
+                                   .getTransactionByType( "not-existing-type" )
+                                   .resultStatusIs( HttpStatus.OK )
+                                   .resultContentIs( "[]" );
+    }
 }

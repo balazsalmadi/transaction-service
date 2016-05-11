@@ -3,7 +3,7 @@ package com.transaction;
 import com.transaction.rest.MissingParentTransactionException;
 import org.springframework.stereotype.Repository;
 
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
@@ -15,6 +15,7 @@ public class TransactionStore {
 
     private ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
     private ConcurrentHashMap<Long, Transaction> transactions = new ConcurrentHashMap<>();
+    private Map<String, List<Long>> typeViews = new HashMap<>();
 
     /**
      * Add new transaction to the transaction store. It assure the parent transaction is exists.
@@ -27,8 +28,17 @@ public class TransactionStore {
         lock.writeLock().lock();
         assureParentExists( transaction );
         boolean isNewTransaction = transactions.putIfAbsent( transactionId, transaction ) == null;
+        if ( isNewTransaction ) {
+            updateTypeView( transactionId, transaction.type() );
+        }
         lock.writeLock().unlock();
         return isNewTransaction;
+    }
+
+    private void updateTypeView( long transactionId, String transactionType ) {
+        List<Long> typeView = Optional.ofNullable( typeViews.get( transactionType ) ).orElse( new ArrayList<Long>() );
+        typeView.add( transactionId );
+        typeViews.put( transactionType, typeView );
     }
 
     private void assureParentExists( Transaction transaction ) {
@@ -52,5 +62,19 @@ public class TransactionStore {
         transaction = transactions.get( transactionId );
         lock.readLock().unlock();
         return transaction;
+    }
+
+    /**
+     * Retrieves a collection of transaction ids those belong to a given type.
+     *
+     * @param type type to retrieve by
+     * @return list of transaction ids those belong to the given type, or empty list if no transaction belongs to the type.
+     */
+    public List<Long> retrieveByType( String type ) {
+        List<Long> typeView;
+        lock.readLock().lock();
+        typeView = Optional.ofNullable( typeViews.get( type ) ).orElse( new ArrayList<>() );
+        lock.readLock().unlock();
+        return typeView;
     }
 }
