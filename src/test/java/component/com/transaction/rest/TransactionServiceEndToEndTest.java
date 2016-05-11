@@ -42,7 +42,7 @@ public class TransactionServiceEndToEndTest extends AbstractJUnit4SpringContextT
     @Test
     public void parentOfChildTransactionMustExists() throws Exception {
         transactionControllerDriver.putTransaction( 10, childTransaction( 5000, "cars", 10L ) )
-                                   .resultStatusIs( HttpStatus.CONFLICT )
+                                   .resultStatusIs( HttpStatus.BAD_REQUEST )
                                    .resultContentIs( "Parent transaction '10' is missing!" );
     }
 

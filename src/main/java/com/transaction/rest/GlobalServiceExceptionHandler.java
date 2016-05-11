@@ -10,13 +10,13 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 public class GlobalServiceExceptionHandler {
 
     @ResponseStatus( HttpStatus.CONFLICT )
-    @ExceptionHandler( { TransactionAlreadyExistsException.class, MissingParentTransactionException.class } )
+    @ExceptionHandler( { TransactionAlreadyExistsException.class } )
     public @ResponseBody String handleConflict( Exception ex ) {
         return ex.getMessage();
     }
 
     @ResponseStatus( HttpStatus.BAD_REQUEST )
-    @ExceptionHandler( { TransactionNotFoundException.class } )
+    @ExceptionHandler( { TransactionNotFoundException.class, MissingParentTransactionException.class } )
     public @ResponseBody String transactionNotFound( Exception ex ) {
         return ex.getMessage();
     }
