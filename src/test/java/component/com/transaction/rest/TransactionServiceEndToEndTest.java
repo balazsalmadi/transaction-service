@@ -52,4 +52,28 @@ public class TransactionServiceEndToEndTest extends AbstractJUnit4SpringContextT
                                    .putTransaction( 11, childTransaction( 10000, "shopping", 10L ) )
                                    .resultStatusIs( HttpStatus.CREATED );
     }
+
+    @Test
+    public void rootTransactionCanBeQueried() throws Exception {
+        transactionControllerDriver.putTransaction( 10, rootTransaction( 5000, "cars" ) )
+                                   .getTransaction( 10 )
+                                   .resultStatusIs( HttpStatus.OK )
+                                   .resultContentIs( "{\"amount\":5000.0,\"type\":\"cars\"}" );
+    }
+
+    @Test
+    public void childTransactionCanBeQueried() throws Exception {
+        transactionControllerDriver.putTransaction( 10, rootTransaction( 5000, "cars" ) )
+                                   .putTransaction( 11, childTransaction( 15000, "shopping", 10L ) )
+                                   .getTransaction( 11 )
+                                   .resultStatusIs( HttpStatus.OK )
+                                   .resultContentIs( "{\"amount\":15000.0,\"type\":\"shopping\",\"parent_id\":10}" );
+    }
+
+    @Test
+    public void notPossibleToQueryingNonExistingTransaction() throws Exception {
+        transactionControllerDriver.getTransaction( 10 )
+                                   .resultStatusIs( HttpStatus.BAD_REQUEST )
+                                   .resultContentIs( "Transaction '10' is not found!" );
+    }
 }

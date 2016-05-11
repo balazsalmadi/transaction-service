@@ -14,4 +14,10 @@ public class GlobalServiceExceptionHandler {
     public @ResponseBody String handleConflict( Exception ex ) {
         return ex.getMessage();
     }
+
+    @ResponseStatus( HttpStatus.BAD_REQUEST )
+    @ExceptionHandler( { TransactionNotFoundException.class } )
+    public @ResponseBody String transactionNotFound( Exception ex ) {
+        return ex.getMessage();
+    }
 }

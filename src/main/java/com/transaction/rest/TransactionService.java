@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Optional;
+
 @RestController
 @RequestMapping( "/transactionservice" )
 public class TransactionService {
@@ -20,5 +22,11 @@ public class TransactionService {
         if ( !transactionStore.addTransaction( transactionId, transaction ) ) {
             throw new TransactionAlreadyExistsException( "Transaction is already exists with id: '" + transactionId + "'!" );
         }
+    }
+
+    @RequestMapping( method = RequestMethod.GET, path = "/transaction/{transactionId}" )
+    @ResponseStatus( HttpStatus.OK )
+    public @ResponseBody Transaction queryTransaction( @PathVariable long transactionId ) {
+        return Optional.ofNullable( transactionStore.retrieve( transactionId ) ).orElseThrow( () -> new TransactionNotFoundException( "Transaction '" + transactionId + "' is not found!" ) );
     }
 }

@@ -1,5 +1,6 @@
 package unit.com.transaction.rest;
 
+import com.transaction.Transaction;
 import com.transaction.TransactionStore;
 import com.transaction.rest.MissingParentTransactionException;
 import org.junit.Rule;
@@ -11,6 +12,7 @@ import static com.transaction.Transaction.rootTransaction;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.rules.ExpectedException.none;
+import static unit.com.transaction.TransactionMatcher.anyTransaction;
 
 public class TransactionStoreTest {
 
@@ -20,7 +22,7 @@ public class TransactionStoreTest {
     @Test
     public void rootTransactionCabBeAdded() throws Exception {
         TransactionStore transactionStore = new TransactionStore();
-        boolean cars = transactionStore.addTransaction( 10L, rootTransaction( 5000, "cars" ) );
+        boolean cars = transactionStore.addTransaction( 10, rootTransaction( 5000, "cars" ) );
         assertThat( "Add transaction returns 'true', if root transaction is added.", cars, is( true ) );
     }
 
@@ -35,8 +37,8 @@ public class TransactionStoreTest {
     @Test
     public void transactionCannotBeAddedTwice() throws Exception {
         TransactionStore transactionStore = new TransactionStore();
-        transactionStore.addTransaction( 10L, rootTransaction( 5000, "cars" ) );
-        boolean cars = transactionStore.addTransaction( 10L, rootTransaction( 5000, "cars" ) );
+        transactionStore.addTransaction( 10, rootTransaction( 5000, "cars" ) );
+        boolean cars = transactionStore.addTransaction( 10, rootTransaction( 5000, "cars" ) );
         assertThat( "Add transaction returns 'false', if transaction id already added.", cars, is( false ) );
     }
 
@@ -45,6 +47,27 @@ public class TransactionStoreTest {
         expectedException.expect( MissingParentTransactionException.class );
         expectedException.expectMessage( "Parent transaction '10' is missing!" );
         TransactionStore transactionStore = new TransactionStore();
-        transactionStore.addTransaction( 11L, childTransaction( 5000, "cars", 10L ) );
+        transactionStore.addTransaction( 11, childTransaction( 5000, "cars", 10L ) );
     }
+
+    @Test
+    public void rootTransactionRetrieve() throws Exception {
+        TransactionStore transactionStore = new TransactionStore();
+        transactionStore.addTransaction( 10, rootTransaction( 5000, "cars" ) );
+        Transaction transaction = transactionStore.retrieve( 10 );
+        assertThat( transaction, anyTransaction().whichHasAmount( 5000 )
+                                                 .whichHasType( "cars" ) );
+    }
+
+    @Test
+    public void childTransactionRetrieve() throws Exception {
+        TransactionStore transactionStore = new TransactionStore();
+        transactionStore.addTransaction( 10, rootTransaction( 5000, "cars" ) );
+        transactionStore.addTransaction( 11, childTransaction( 15000, "shopping", 10L ) );
+        Transaction transaction = transactionStore.retrieve( 11 );
+        assertThat( transaction, anyTransaction().whichHasAmount( 15000 )
+                                                 .whichHasType( "shopping" )
+                                                 .whichHasParentId( 10 ) );
+    }
+
 }

@@ -34,8 +34,23 @@ public class TransactionStore {
     private void assureParentExists( Transaction transaction ) {
         Long parentId = transaction.parentId();
         if ( parentId != null ) {
-            Optional.ofNullable( transactions.get( parentId ) )
+            Optional.ofNullable( retrieve( parentId ) )
                     .orElseThrow( () -> new MissingParentTransactionException( "Parent transaction '" + parentId + "' is missing!" ) );
         }
+    }
+
+    /**
+     * Retrives the transaction associated with the given transaction id.
+     *
+     * @param transactionId expected transaction's id
+     * @return The {@link Transaction} instance that is associated with the give transaction id,
+     * or {@code null} if no transaction is associated with the given id.
+     */
+    public Transaction retrieve( long transactionId ) {
+        Transaction transaction;
+        lock.readLock().lock();
+        transaction = transactions.get( transactionId );
+        lock.readLock().unlock();
+        return transaction;
     }
 }

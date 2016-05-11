@@ -14,6 +14,7 @@ import org.springframework.web.context.WebApplicationContext;
 
 import static component.com.transaction.TransactionStringFactory.transactionAsString;
 import static org.hamcrest.Matchers.is;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @Component
@@ -30,6 +31,11 @@ public class TransactionControllerDriver {
 
     public TransactionControllerDriver putTransaction( long transactionId, Transaction transaction ) throws Exception {
         resultAction = mvc.perform( MockMvcRequestBuilders.put( "/transactionservice/transaction/" + transactionId ).contentType( MediaType.APPLICATION_JSON ).content( transactionAsString( transaction ) ) );
+        return this;
+    }
+
+    public TransactionControllerDriver getTransaction( long transactionId ) throws Exception {
+        resultAction = mvc.perform( get( "/transactionservice/transaction/" + transactionId ) );
         return this;
     }
 

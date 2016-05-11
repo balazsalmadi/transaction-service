@@ -1,14 +1,13 @@
 package com.transaction;
 
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonSetter;
+import com.fasterxml.jackson.annotation.*;
 
 /**
  * This class represents a transaction data model. It contains the transaction amount, its type and an optional parentId.
  */
 public class Transaction {
+
     private double amount;
     private String type;
     private Long parentId;
@@ -29,21 +28,25 @@ public class Transaction {
         return transaction;
     }
 
-    @JsonSetter( "parent_id" )
-    public void parentId( Long parentId ) {
-        this.parentId = parentId;
-    }
-
+    @JsonGetter( "amount" )
     public double amount() {
         return amount;
     }
 
+    @JsonGetter( "type" )
     public String type() {
         return type;
     }
 
+    @JsonGetter( "parent_id" )
+    @JsonInclude( JsonInclude.Include.NON_NULL )
     public Long parentId() {
         return parentId;
+    }
+
+    @JsonSetter( "parent_id" )
+    public void parentId( Long parentId ) {
+        this.parentId = parentId;
     }
 
     @Override public String toString() {
