@@ -19,7 +19,7 @@ import static org.springframework.test.annotation.DirtiesContext.ClassMode.BEFOR
 @ContextConfiguration( classes = { ComponentTestConfiguration.class } )
 @WebAppConfiguration
 @DirtiesContext( classMode = BEFORE_EACH_TEST_METHOD )
-public class TransactionServiceEndToEndTest extends AbstractJUnit4SpringContextTests {
+public class TransactionRestControllerEndToEndTest extends AbstractJUnit4SpringContextTests {
 
     @Autowired
     private TransactionControllerDriver transactionControllerDriver;

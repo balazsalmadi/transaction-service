@@ -12,7 +12,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping( "/transactionservice" )
-public class TransactionService {
+public class TransactionRestController {
 
     @Autowired
     private TransactionStore transactionStore;
