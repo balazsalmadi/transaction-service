@@ -1,6 +1,6 @@
-package component.com.transaction.rest;
+package integration.com.transaction.rest;
 
-import component.com.transaction.ComponentTestConfiguration;
+import integration.com.transaction.IntegrationTestConfiguration;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,13 +16,13 @@ import static com.transaction.Transaction.rootTransaction;
 import static org.springframework.test.annotation.DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD;
 
 @RunWith( SpringJUnit4ClassRunner.class )
-@ContextConfiguration( classes = { ComponentTestConfiguration.class } )
+@ContextConfiguration( classes = { IntegrationTestConfiguration.class } )
 @WebAppConfiguration
 @DirtiesContext( classMode = BEFORE_EACH_TEST_METHOD )
 public class TransactionRestControllerEndToEndTest extends AbstractJUnit4SpringContextTests {
 
     @Autowired
-    private TransactionControllerDriver transactionControllerDriver;
+    private TransactionRestControllerDriver transactionControllerDriver;
 
     @Test
     public void transactionCanBeCreated() throws Exception {

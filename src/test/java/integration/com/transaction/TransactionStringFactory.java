@@ -1,4 +1,4 @@
-package component.com.transaction;
+package integration.com.transaction;
 
 import com.transaction.Transaction;
 
