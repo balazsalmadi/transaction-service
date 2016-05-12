@@ -96,4 +96,25 @@ public class TransactionServiceEndToEndTest extends AbstractJUnit4SpringContextT
                                    .resultStatusIs( HttpStatus.OK )
                                    .resultContentIs( "[]" );
     }
+
+    @Test
+    public void sumOfTransactionChain() throws Exception {
+        transactionControllerDriver.putTransaction( 10, rootTransaction( 1000, "cars" ) )
+                                   .putTransaction( 11, childTransaction( 2000, "shopping", 10L ) )
+                                   .putTransaction( 12, rootTransaction( 3000, "cars" ) )
+                                   .putTransaction( 13, childTransaction( 4000, "shopping", 12L ) )
+                                   .putTransaction( 14, childTransaction( 5000, "cars", 10L ) )
+                                   .putTransaction( 15, childTransaction( 6000, "shopping", 11L ) )
+                                   .getSumOfTransactionChain( 10 )
+                                   .resultStatusIs( HttpStatus.OK )
+                                   .resultContentIs( "{\"sum\":14000.0}" );
+    }
+
+    @Test
+    public void sumOfNotExistingTransactionChain() throws Exception {
+        transactionControllerDriver.putTransaction( 10, rootTransaction( 1000, "cars" ) )
+                                   .getSumOfTransactionChain( 15 )
+                                   .resultStatusIs( HttpStatus.BAD_REQUEST )
+                                   .resultContentIs( "Transaction '15' is not found!" );
+    }
 }

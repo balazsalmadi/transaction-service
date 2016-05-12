@@ -44,6 +44,11 @@ public class TransactionControllerDriver {
         return this;
     }
 
+    public TransactionControllerDriver getSumOfTransactionChain( long transactionId ) throws Exception {
+        resultAction = mvc.perform( get( "/transactionservice/sum/" + transactionId ) );
+        return this;
+    }
+
     public TransactionControllerDriver resultStatusIs( HttpStatus status ) throws Exception {
         resultAction = resultAction.andExpect( status().is( status.value() ) );
         return this;

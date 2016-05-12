@@ -36,4 +36,10 @@ public class TransactionService {
     public @ResponseBody List<Long> retrieveTransactionsByType( @PathVariable String type ) {
         return transactionStore.retrieveByType( type );
     }
+
+    @RequestMapping( method = RequestMethod.GET, path = "/sum/{transactionId}" )
+    @ResponseStatus( HttpStatus.OK )
+    public @ResponseBody TransactionChainSum retrieveTransactionChainSum( @PathVariable long transactionId ) {
+        return new TransactionChainSum( transactionStore.retrieveSumOfChain( transactionId ) );
+    }
 }

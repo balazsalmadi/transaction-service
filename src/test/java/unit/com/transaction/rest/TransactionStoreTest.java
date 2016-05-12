@@ -129,4 +129,55 @@ public class TransactionStoreTest {
 
         assertThat( transactionIds, emptyCollectionOf( Long.class ) );
     }
+
+    @Test
+    public void sumOfChainWithTwoElements() throws Exception {
+        TransactionStore transactionStore = new TransactionStore();
+        transactionStore.addTransaction( 10, rootTransaction( 1000, "cars" ) );
+        transactionStore.addTransaction( 11, childTransaction( 2000, "shopping", 10L ) );
+
+        double sum = transactionStore.retrieveSumOfChain( 10 );
+
+        assertThat( sum, is( 3000. ) );
+    }
+
+    @Test
+    public void sumOfChainWithFiveElements() throws Exception {
+        TransactionStore transactionStore = new TransactionStore();
+        transactionStore.addTransaction( 10, rootTransaction( 1000, "cars" ) );
+        transactionStore.addTransaction( 11, childTransaction( 2000, "shopping", 10L ) );
+        transactionStore.addTransaction( 12, childTransaction( 3000, "shopping", 11L ) );
+        transactionStore.addTransaction( 13, childTransaction( 4000, "shopping", 12L ) );
+        transactionStore.addTransaction( 14, childTransaction( 5000, "shopping", 13L ) );
+
+        double sum = transactionStore.retrieveSumOfChain( 10 );
+
+        assertThat( sum, is( 15000. ) );
+    }
+
+    @Test
+    public void sumOfChainWithForkUnderElement() throws Exception {
+        TransactionStore transactionStore = new TransactionStore();
+        transactionStore.addTransaction( 10, rootTransaction( 1000, "cars" ) );
+        transactionStore.addTransaction( 11, childTransaction( 2000, "shopping", 10L ) );
+        transactionStore.addTransaction( 12, childTransaction( 3000, "shopping", 11L ) );
+        transactionStore.addTransaction( 13, childTransaction( 4000, "shopping", 10L ) );
+        transactionStore.addTransaction( 14, childTransaction( 5000, "shopping", 13L ) );
+
+        double sum = transactionStore.retrieveSumOfChain( 10 );
+
+        assertThat( sum, is( 15000. ) );
+    }
+
+    @Test
+    public void sumOfChainNotIncludesOtherTransactionsAmount() throws Exception {
+        TransactionStore transactionStore = new TransactionStore();
+        transactionStore.addTransaction( 10, rootTransaction( 1000, "cars" ) );
+        transactionStore.addTransaction( 11, rootTransaction( 2000, "shopping" ) );
+        transactionStore.addTransaction( 12, childTransaction( 3000, "shopping", 10L ) );
+
+        double sum = transactionStore.retrieveSumOfChain( 10 );
+
+        assertThat( sum, is( 4000. ) );
+    }
 }
